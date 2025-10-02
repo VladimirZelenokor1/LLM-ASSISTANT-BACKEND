@@ -1,0 +1,27 @@
+# path: .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.env
+.venv/
+venv/
+.build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+coverage.xml
+htmlcov/
+.coverage
+
+# OS / Editors
+.DS_Store
+.vscode/
+.idea/
+
+# Project
+*.log
