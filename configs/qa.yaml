@@ -1,0 +1,32 @@
+# Настройки QA-ретрива и генерации ответа
+retrieval:
+  store: qdrant
+  parents_collection: "transformers_parents"
+  chunks_collection: "transformers_chunks"
+
+  filters:
+    product_code: "transformers"
+    lang: "en"
+    version: "main"
+
+  top_k_parents: 3
+  top_k_children_per_parent: 4
+  min_score: 0.3
+  alpha_parent_child: 0.7
+  max_context_tokens: 4000
+
+embedding:
+  provider: "e5"
+
+  e5:
+    model: "intfloat/e5-base-v2"
+    device: "cpu"
+
+prompt:
+  citation_style: "number"
+  system_policy: "You are a helpful assistant that answers questions based on provided documents. Cite sources using numbers."
+  temperature: 0.1
+  max_output_tokens: 1000
+
+logging:
+  level: "INFO"

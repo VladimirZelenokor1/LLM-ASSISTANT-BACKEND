@@ -1,0 +1,47 @@
+# Конфигурация загрузки и препроцессинга документации
+repo_sources:
+  - product: "Transformers"
+    product_code: "transformers"
+    version: "main"
+    lang: "en"
+    repo: "https://github.com/huggingface/transformers.git"
+    docs_path: "docs/source/en"
+
+    include_glob:
+      - "**/*.md"
+      - "**/*.mdx"
+
+    exclude_glob:
+      - "**/_build/**"
+      - "**/_static/**"
+      - "**/_templates/**"
+      - "**/assets/**"
+      - "**/images/**"
+      - "**/versions/**"
+      - "**/node_modules/**"
+      - "**/zh/**"
+      - "**/ru/**"
+      - "**/ja/**"
+
+limits:
+  max_docs_per_source: 50000
+
+fetch:
+  timeout_sec: 60
+  retries: 3
+  backoff_start_sec: 0.5
+
+dedup:
+  method: "rapidfuzz"
+  threshold: 97
+  min_len: 1200
+
+storage:
+  raw_repos_dir: "data/raw_repos"
+  processed_dir: "data/clean_docs"
+  state_dir: "artifacts/state"
+  dedup_state: "artifacts/index/dedup_state.json"
+
+politeness:
+  rate_limit_sec: 0.0
+  user_agent: "PT-RAG-Loader"

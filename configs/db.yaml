@@ -1,0 +1,6 @@
+# Конфигурация базы данных
+db:
+  url: "postgresql+psycopg://nlq_user:nlq_pass@postgres:5432/transformers"
+  echo: false
+  readonly: true
+  schema: "public"

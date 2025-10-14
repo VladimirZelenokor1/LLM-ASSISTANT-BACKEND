@@ -1,0 +1,19 @@
+# Конфигурация индексера чанков
+indexer:
+  embeddings_config: "configs/embeddings.yaml"
+  chunks_root: "data/chunks"
+  batch_size: 64
+  auto_verify: true
+
+update:
+  strategy: "full"  # full | incremental
+  watch_changes: false
+  poll_interval_seconds: 300
+
+verification:
+  enabled: true
+  sample_queries:
+    - "transformers pipeline"
+    - "quantization"
+    - "fine tuning"
+  expected_min_results: 3

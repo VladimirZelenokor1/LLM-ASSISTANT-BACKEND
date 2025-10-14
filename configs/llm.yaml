@@ -1,0 +1,48 @@
+# Конфигурация LLM провайдера
+llm:
+  provider: openrouter  # openrouter|openai|transformers|ollama|vllm|llama_cpp
+  model: anthropic/claude-3.5-sonnet
+  base_url: null
+  
+  # Параметры генерации
+  temperature: 0.1
+  max_output_tokens: 512
+  timeout_sec: 60
+  top_p: 1.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+  stream: true
+  max_retries: 3
+  
+  # Автовыбор tool-вызовов
+  tool_choice: auto
+  response_format: none
+  json_schema_path: null
+  
+  # Дополнительные заголовки
+  extra_headers: { }
+
+openrouter:
+  api_key: ""
+  base_url: https://openrouter.ai/api/v1
+  extra_headers:
+    HTTP-Referer: https://github.com/your-org/llm-assistant
+    X-Title: LLM Assistant
+
+openai:
+  api_key: ""
+
+ollama:
+  host: http://localhost:11434
+
+vllm:
+  base_url: http://localhost:8000/v1
+
+transformers:
+  model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  device: auto
+
+llama_cpp:
+  model_path: null
+  n_ctx: 4096
+  n_gpu_layers: -1

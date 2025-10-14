@@ -1,0 +1,32 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HF_HOME=/app/.cache/huggingface \
+    TRANSFORMERS_CACHE=/app/.cache/transformers \
+    HUGGINGFACE_HUB_CACHE=/app/.cache/huggingface
+
+# curl для проверок, pg-client для pg_isready, git на случай зависимости из репо
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential curl wget git ca-certificates postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+RUN mkdir -p /app/.cache/huggingface /app/.cache/transformers
+
+# Копируем весь репозиторий
+COPY . /app
+
+# Установка зависимостей (если есть)
+SHELL ["/bin/bash", "-lc"]
+RUN if [[ -f requirements.txt ]]; then \
+        pip install -r requirements.txt; \
+    elif [[ -f pyproject.toml ]]; then \
+        pip install .; \
+    else \
+        echo "No requirements.txt or pyproject.toml found. Skipping deps install."; \
+    fi
+
+EXPOSE 8000
+CMD ["bash", "-lc", "uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --access-log"]

@@ -1,27 +1,105 @@
-# path: .gitignore
-# Python
+# ---- Python ----
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 *.so
-.env
-.venv/
-venv/
-.build/
-dist/
 *.egg-info/
+dist/
+build/
 .pytest_cache/
 .mypy_cache/
 .dmypy.json
-coverage.xml
-htmlcov/
 .coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
-# OS / Editors
+# ---- Virtualenvs ----
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+
+# ---- Environments / secrets ----
+*.env
+configs/.env
+.env.local
+.env.dev
+.env.prod
+.env.backup
+*.pem
+*.key
+*.crt
+*.db
+
+# ---- OS / Editors ----
 .DS_Store
-.vscode/
+Thumbs.db
 .idea/
+.vscode/
+*.swp
 
-# Project
+# ---- Logs / temp ----
 *.log
+logs/
+tmp/
+.cache/
+__debug_bin*
+
+# ---- Tests / reports ----
+.tox/
+.nox/
+nosetests.xml
+pytestdebug.log
+
+# ---- Docker / Compose ----
+.dockerignore
+docker-compose.override.yml
+docker-compose.dev.yml
+docker-compose.local.yml
+*.Dockerfile
+Dockerfile.dev
+Dockerfile.local
+
+# ---- CI/CD ----
+.github/
+.gitlab/
+.gitattributes
+
+# ---- Misc ----
+.ipynb_checkpoints/
+.notebooks/
+examples/
+experiments/
+media/
+screenshots/
+scripts/local/
+scripts/debug/
+
+# ---- Keep docs and metadata ----
+!README.md
+!LICENSE
+!Makefile
+!pyproject.toml
+!docker-compose.yml
+!Dockerfile
+
+# --- Docker build caches / artifacts ---
+docker/cache/**
+docker/artifacts/**
+
+# Разрешаем «якоря» для пустых папок, если нужны
+!docker/cache/.gitkeep
+!docker/artifacts/.gitkeep
+!docker/cache/.gitignore
+!docker/artifacts/.gitignore
+
+# --- Общие кэши моделей/HF/Transformers ---
+**/.cache/**
+**/.hf-cache/**
+**/huggingface/**
+**/transformers/.locks/**
+**/transformers/cache/**
+**/sentence_transformers/**

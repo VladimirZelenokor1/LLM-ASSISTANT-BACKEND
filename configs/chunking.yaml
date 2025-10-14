@@ -1,0 +1,35 @@
+# Конфигурация чанкинга исходных документов
+chunker:
+  strategy: rule_aware  # rule_aware | basic
+  unit: tokens          # tokens | chars
+
+  # Общие ограничения для текстовых чанков
+  max_tokens: 420
+  overlap_sentences: 2
+  sentence_max: 8
+  min_chars: 180
+  max_chunks_per_doc: 60
+
+  # Бюджеты для кода/таблиц
+  max_tokens_code: 300
+  max_chars_code: 1600
+
+# Аббревиатуры для корректного сплита по предложениям
+abbreviations:
+  en:
+    - "e.g."
+    - "i.e."
+    - "cf."
+    - "vs."
+    - "No."
+    - "Fig."
+    - "Dr."
+    - "Mr."
+    - "Ms."
+    - "etc."
+
+# Пути к директориям
+paths:
+  input_dir: "data/clean_docs"
+  preprocessed_dir: "data/preprocessed"
+  chunks_dir: "data/chunks"

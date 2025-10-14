@@ -1,0 +1,58 @@
+# Настройки построения эмбеддингов
+chunks:
+  root_dir: "data/chunks"
+  glob: "**/*.jsonl"
+  batch_size: 64
+
+provider:
+  name: "e5"  # e5 | openai
+
+  e5:
+    model: "intfloat/e5-base-v2"
+    device: "cpu"
+    normalize: true
+
+  openai:
+    model: "text-embedding-3-small"
+    timeout_sec: 30
+    max_retries: 3
+
+stores:
+  primary: "qdrant_main"
+
+  qdrant_main:
+    url: "http://qdrant:6333"
+    api_key: ""
+    collection: "transformers_chunks"
+    distance: "COSINE"
+    on_missing: "create"
+    payload_index:
+      - "product_code"
+      - "lang"
+      - "chunk_id"
+      - "document_id"
+      - "title"
+      - "section"
+
+  qdrant_parents:
+    url: "http://qdrant:6333"
+    api_key: ""
+    collection: "transformers_parents"
+    distance: "COSINE"
+    on_missing: "create"
+    payload_index:
+      - "product_code"
+      - "lang"
+      - "parent_id"
+      - "document_id"
+      - "kind"
+      - "h_path"
+
+sanity:
+  k: 5
+  queries:
+    - "How to add a new pipeline in Transformers?"
+    - "What is Fully Sharded Data Parallel (FSDP)?"
+    - "Recommended way to quantize a model"
+    - "Streaming generation server with TGI"
+    - "Accelerate vs DeepSpeed integration"

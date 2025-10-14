@@ -1,0 +1,33 @@
+# Конфигурация агента маршрутизации запросов
+agent:
+  # Режим выбора инструмента: rules | llm | hybrid
+  mode: hybrid
+  
+  # Разрешать ли комбинировать несколько инструментов
+  allow_combine: false
+  
+  # Приоритеты инструментов (слева — выше)
+  tools_priorities:
+    - "docs"
+    - "web"
+    - "sql"
+  
+  # Минимальная уверенность для выбора инструмента
+  min_confidence: 0.6
+  
+  # Настройки LLM-классификатора маршрута
+  llm_classifier:
+    model: ${LLM_MODEL:-openai/gpt-4o-mini}
+    temperature: 0.0
+    top_p: 1.0
+  
+  # Базовые фильтры для ретрива
+  routing_filters:
+    product_code: "transformers"
+    lang: "en"
+    version: "main"
+  
+  # Глубокий поиск
+  deep_search:
+    enabled: false
+    max_hops: 1

@@ -1,0 +1,135 @@
+name: llm-assistant
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.15.5
+    platform: linux/amd64
+    ports:
+      - "6333:6333"
+      - "6334:6334"  # gRPC port
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      QDRANT__STORAGE__STORAGE_PATH: /qdrant/storage
+      RUST_LOG: info
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "timeout 3 bash -c '</dev/tcp/localhost/6333' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: transformers
+      POSTGRES_USER: nlq_user
+      POSTGRES_PASSWORD: nlq_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U nlq_user -d transformers" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DB_URL: postgresql+psycopg://nlq_user:nlq_pass@postgres:5432/transformers
+      HF_HOME: /app/.cache/huggingface
+      TRANSFORMERS_CACHE: /app/.cache/transformers
+      HUGGINGFACE_HUB_CACHE: /app/.cache/huggingface
+    volumes:
+      - ../data:/app/data
+      - ../configs:/app/configs
+      - api_cache:/app/.cache
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    command: >
+      bash -lc '
+        set -euo pipefail
+        echo "[api] Waiting for Qdrant (/) ..."
+        for i in {1..120}; do
+          curl -fsS http://qdrant:6333 >/dev/null 2>&1 && break
+          sleep 1
+        done
+        echo "[api] Waiting for Postgres ..."
+        for i in {1..120}; do
+          pg_isready -h postgres -p 5432 -U nlq_user -d transformers && break || true
+          sleep 1
+        done
+        echo "[api] Starting Uvicorn..."
+        exec uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --access-log
+      '
+
+  pipeline-full:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pipeline
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      HF_HOME: /app/.cache/huggingface
+      TRANSFORMERS_CACHE: /app/.cache/transformers
+      HUGGINGFACE_HUB_CACHE: /app/.cache/huggingface
+    volumes:
+      - ../data:/app/data
+      - ../configs:/app/configs
+      - ./artifacts:/app/artifacts
+      - pipeline_cache:/app/.cache
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    profiles: [ "pipeline" ]
+    init: true
+    restart: on-failure
+    command: >
+      bash -lc '
+        set -euo pipefail
+        echo "[pipeline] Waiting for Qdrant (/) ..."
+        for i in {1..180}; do
+          curl -fsS http://qdrant:6333 >/dev/null 2>&1 && break
+          sleep 1
+        done
+        echo "=== STEP 1: Data Ingestion ==="
+        python -m tools.rag.sources.pt_portal.cli --config /app/configs/pt_loader.yaml
+        echo "=== STEP 2: Chunking ==="
+        python -m tools.rag.chunking.cli --config /app/configs/chunking.yaml
+        echo "=== STEP 3: Embeddings ==="
+        python -m tools.rag.embeddings.cli --config /app/configs/embeddings.yaml embed
+        echo "=== STEP 4: Sanity ==="
+        python -m tools.rag.embeddings.cli --config /app/configs/embeddings.yaml sanity
+        echo "[pipeline] DONE"
+      '
+
+volumes:
+  qdrant_data:
+  postgres_data:
+  api_cache:
+  pipeline_cache:
+
+networks:
+  default:
+    name: llm_assistant_net
