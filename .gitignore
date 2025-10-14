@@ -55,7 +55,6 @@ nosetests.xml
 pytestdebug.log
 
 # ---- Docker / Compose ----
-.dockerignore
 docker-compose.override.yml
 docker-compose.dev.yml
 docker-compose.local.yml

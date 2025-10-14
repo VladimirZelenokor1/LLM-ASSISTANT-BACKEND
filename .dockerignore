@@ -1,0 +1,73 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.coverage
+htmlcov/
+coverage.xml
+
+# ---- Virtualenvs ----
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+
+# ---- Environments / secrets ----
+*.env
+configs/.env
+*.pem
+*.key
+*.crt
+*.db
+
+# ---- OS / Editors ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ---- Logs / temp ----
+*.log
+logs/
+tmp/
+.cache/
+__debug_bin*
+
+# ---- Git / CI ----
+.git
+.gitignore
+.github/
+.gitlab/
+.gitattributes
+
+# ---- Docker / Compose ----
+docker-compose.override.yml
+docker-compose.dev.yml
+docker-compose.local.yml
+*.Dockerfile
+Dockerfile.dev
+Dockerfile.local
+
+# ---- Docs / media ----
+*.md
+*.pdf
+*.ipynb
+tests/
+notebooks/
+docs/
+media/
+screenshots/
+examples/
+experiments/
+
